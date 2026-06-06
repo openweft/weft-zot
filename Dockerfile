@@ -18,7 +18,9 @@ RUN git clone --depth=1 --branch=${ZOT_VERSION} https://github.com/project-zot/z
 ENV CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH}
 RUN go build -trimpath -tags="${EXTENSIONS}" -ldflags="-s -w" -o /out/zot ./cmd/zot
 
-FROM gcr.io/distroless/static-debian12:nonroot
+FROM scratch
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
 COPY --from=builder /out/zot /usr/local/bin/zot
 EXPOSE 5000
 ENTRYPOINT ["/usr/local/bin/zot"]
