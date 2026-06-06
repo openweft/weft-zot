@@ -8,7 +8,10 @@ ARG GO_VERSION=1.23
 # Feature set : sync (registry mirroring, what we want for the egress
 # cache pattern), search/ui (operator-facing), apikey/imagetrust
 # (signing) ; drop "lint" / "scrub" which need extra non-Go deps.
-ARG EXTENSIONS="sync,search,ui,apikey,imagetrust,mgmt"
+# UI extension drops out : it embeds a pre-built SPA that needs a node
+# stage to materialise ; out of scope for the wrapper build. Operators
+# point a browser-friendly proxy (weft-webui) at the API instead.
+ARG EXTENSIONS="sync,search,apikey,imagetrust,mgmt"
 
 FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}-bookworm AS builder
 ARG ZOT_VERSION EXTENSIONS TARGETOS TARGETARCH
