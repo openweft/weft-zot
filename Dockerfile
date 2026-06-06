@@ -8,10 +8,20 @@ ARG GO_VERSION=1.23
 # Feature set : sync (registry mirroring, what we want for the egress
 # cache pattern), search/ui (operator-facing), apikey/imagetrust
 # (signing) ; drop "lint" / "scrub" which need extra non-Go deps.
-# UI extension drops out : it embeds a pre-built SPA that needs a node
-# stage to materialise ; out of scope for the wrapper build. Operators
-# point a browser-friendly proxy (weft-webui) at the API instead.
-ARG EXTENSIONS="sync,search,apikey,imagetrust,mgmt"
+# Drop two extensions vs upstream defaults :
+#   - `ui` embeds a pre-built SPA (npm/vite stage upstream) — out of
+#     scope for the wrapper, weft-webui talks to the API directly.
+#   - `imagetrust` pulls containers/image's GPG mechanism which needs
+#     cgo (libgpgme) ; we lose Cosign+Notary verification but keep
+#     transport TLS, signed-by-key apikey, and the sync mirror — the
+#     primary openweft use case is egress-cache, not signing.
+#
+# `containers_image_openpgp` is a transitive build tag that switches
+# containers/image's signature backend from gpgme (cgo) to
+# golang.org/x/crypto/openpgp (pure Go). Mandatory or the sync/mgmt
+# packages fail to compile under CGO=0 ; validated locally on
+# amd64+arm64+riscv64+loong64.
+ARG EXTENSIONS="containers_image_openpgp,sync,search,apikey,mgmt"
 
 FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}-bookworm AS builder
 ARG ZOT_VERSION EXTENSIONS TARGETOS TARGETARCH
