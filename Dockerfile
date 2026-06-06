@@ -32,6 +32,13 @@ ENV CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH}
 RUN go build -trimpath -tags="${EXTENSIONS}" -ldflags="-s -w" -o /out/zot ./cmd/zot
 
 FROM scratch
+ARG ZOT_VERSION
+LABEL org.opencontainers.image.title="weft-zot" \
+      org.opencontainers.image.description="openweft 4-arch build of project-zot/zot (CGO=0 via containers_image_openpgp tag, drops imagetrust+ui)" \
+      org.opencontainers.image.version="${ZOT_VERSION}" \
+      org.opencontainers.image.source="https://github.com/openweft/weft-zot" \
+      org.opencontainers.image.url="https://github.com/openweft/weft-zot" \
+      org.opencontainers.image.licenses="Apache-2.0"
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
 COPY --from=builder /out/zot /usr/local/bin/zot
