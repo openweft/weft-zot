@@ -3,8 +3,8 @@
 # via the ZOT_VERSION build-arg ; bump = one ARG change + a `vX.Y.Z`
 # git tag here.
 
-ARG ZOT_VERSION=v2.1.0
-ARG GO_VERSION=1.23
+ARG ZOT_VERSION=v2.1.22
+ARG GO_VERSION=1.27.2
 # Feature set : sync (registry mirroring, what we want for the egress
 # cache pattern), search/ui (operator-facing), apikey/imagetrust
 # (signing) ; drop "lint" / "scrub" which need extra non-Go deps.
